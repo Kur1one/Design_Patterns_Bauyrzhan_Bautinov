@@ -1,0 +1,146 @@
+package main
+
+import "fmt"
+
+func main() {
+	Husky := NewHusky()
+	Husky.display()
+	Husky.PerformBark()
+	Husky.GoRun()
+	Husky.GoSecure()
+	fmt.Println("")
+
+	PlushyDog := NewPlushyDog()
+	PlushyDog.display()
+	PlushyDog.PerformBark()
+	PlushyDog.GoRun()
+	PlushyDog.GoSecure()
+	fmt.Println(" ")
+
+	ChihuahuaDog := NewChihuahuaDog()
+	ChihuahuaDog.display()
+	ChihuahuaDog.PerformBark()
+	ChihuahuaDog.GoRun()
+	ChihuahuaDog.GoSecure()
+
+}
+
+type Barkbehavior interface {
+	bark()
+}
+type RunBehavior interface {
+	run()
+}
+type Securebehavior interface {
+	secure()
+}
+type Bark struct{}
+
+func (b Bark) bark() {
+	fmt.Println("bark!")
+}
+
+type NoBark struct{}
+
+func (nb NoBark) bark() {
+	fmt.Println("*silence*")
+}
+
+type Run struct{}
+
+func (r Run) run() {
+	fmt.Println("i can run!")
+}
+
+type NoRun struct{}
+
+func (nr NoRun) run() {
+	fmt.Println(" i cant run!")
+}
+
+type Secure struct{}
+
+func (s Secure) secure() {
+	fmt.Println("i can secure!")
+}
+
+type NoSecure struct{}
+
+func (ns NoSecure) secure() {
+	fmt.Println("i cant secure!")
+}
+
+type Dog struct {
+	display        func()
+	barkbehavior   Barkbehavior
+	runBehavior    RunBehavior
+	securebehavior Securebehavior
+}
+
+func (d *Dog) PerformBark() {
+	d.barkbehavior.bark()
+}
+func (d *Dog) GoRun() {
+	d.runBehavior.run()
+}
+func (d *Dog) GoSecure() {
+	d.securebehavior.secure()
+}
+
+func (d *Dog) setBarkingbehavior(bb Barkbehavior) {
+	d.barkbehavior = bb
+}
+func (d *Dog) setRunbehavior(rb RunBehavior) {
+	d.runBehavior = rb
+}
+func (d *Dog) setSecurebehavior(sb Securebehavior) {
+	d.securebehavior = sb
+}
+
+type Husky struct {
+	*Dog
+}
+
+func NewHusky() *Husky {
+	d := &Dog{
+		display: func() {
+			fmt.Println("Im Huskyyyyy!")
+		},
+		barkbehavior:   &Bark{},
+		runBehavior:    &Run{},
+		securebehavior: &Secure{},
+	}
+	return &Husky{d}
+}
+
+type PlushyDog struct {
+	*Dog
+}
+
+func NewPlushyDog() *PlushyDog {
+	d := &Dog{
+		display: func() {
+			fmt.Println("Im Plushy Dog!")
+		},
+		barkbehavior:   NoBark{},
+		runBehavior:    NoRun{},
+		securebehavior: NoSecure{},
+	}
+	return &PlushyDog{d}
+}
+
+type ChihuahuaDog struct {
+	*Dog
+}
+
+func NewChihuahuaDog() *ChihuahuaDog {
+	d := &Dog{
+		display: func() {
+			fmt.Println("Im Chihuahua!")
+		},
+		barkbehavior:   Bark{},
+		runBehavior:    Run{},
+		securebehavior: NoSecure{},
+	}
+	return &ChihuahuaDog{d}
+}
