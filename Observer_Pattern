@@ -1,0 +1,82 @@
+package main
+
+import "fmt"
+
+func main() {
+	BCEpisode := NewEpisode("Black Clover")
+	observer1 := &Viewer{"Asta"}
+	observer2 := &Viewer{"Fu Ha"}
+	observer3 := &Viewer{"Mimosa"}
+
+	BCEpisode.attach(observer1)
+	BCEpisode.attach(observer2)
+	BCEpisode.attach(observer3)
+
+	BCEpisode.updateAvailability()
+
+	BCEpisode.detach(observer2)
+
+	BCEpisode.updateAvailability()
+
+}
+
+type Subject interface {
+	attach(o Observer)
+	detach(o Observer)
+	notify()
+}
+
+type Observer interface {
+	update(string)
+	getName() string
+}
+
+type Viewer struct {
+	name string
+}
+
+func (v *Viewer) update(t string) {
+	fmt.Println("Hey!", v.name, "New episode of", t, "has released!")
+}
+func (v *Viewer) getName() string {
+	return v.name
+}
+
+type AnimeEpisode struct {
+	ObserverList []Observer
+	name         string
+	Uploaded     bool
+}
+
+func NewEpisode(name string) *AnimeEpisode {
+	return &AnimeEpisode{
+		name: name,
+	}
+}
+
+func (e *AnimeEpisode) updateAvailability() {
+	fmt.Println("Episode", e.name, "is uploaded now")
+	e.Uploaded = true
+	e.notify()
+}
+func (e *AnimeEpisode) attach(o Observer) {
+	e.ObserverList = append(e.ObserverList, o)
+}
+func (e *AnimeEpisode) detach(o Observer) {
+	e.ObserverList = removeFromObserverList(e.ObserverList, o)
+}
+func (e *AnimeEpisode) notify() {
+	for _, viewer := range e.ObserverList {
+		viewer.update(e.name)
+	}
+}
+func removeFromObserverList(ObserverList []Observer, observerToRemove Observer) []Observer {
+	observerListLen := len(ObserverList)
+	for i, observer := range ObserverList {
+		if observerToRemove.getName() == observer.getName() {
+			ObserverList[observerListLen-1], ObserverList[i] = ObserverList[i], ObserverList[observerListLen-1]
+			return ObserverList[:observerListLen-1]
+		}
+	}
+	return ObserverList
+}
